@@ -5,10 +5,14 @@
     $database = 'boxuxcribnh9vox3xhlg'; // Elegir la base de datos que se requiere usar
 
 	// Se utiliza un try catch para intentar la conexión y en caso de no establecerse nos regrese un mensaje de error y cierre la conexión
-    try{
-        $conn = new PDO("mysql:host=$server;dbname=$database;",$username, $password);
+    try {
+        $conn = new PDO("mysql:host=$server;dbname=$database;", $username, $password);
+        if ($conn) {
+            echo "La conexión se ha establecido correctamente.";
+        } else {
+            echo "No se pudo establecer la conexión.";
+        }
     } catch (PDOException $e) {
-        
-        die('Connection failed: '.$e->getMessage());
+        die('Connection failed: ' . $e->getMessage());
     }
-?>
+    

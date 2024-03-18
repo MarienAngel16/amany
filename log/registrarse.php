@@ -1,7 +1,7 @@
 ﻿<?php
 
 // Requerir el archivo database.php 
-require 'database.php';
+include_once 'database.php';
 
 $message = '';
 
