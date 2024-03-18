@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         mail($to, $subject, $message, $headers);
 
         // Redirigir al usuario a una página de éxito
-        header('Location: registro_exitoso.php');
+        header('Location: login.php');
         exit;
     } else {
         $error_message = 'Error al registrar el usuario. Por favor, inténtalo de nuevo.';
