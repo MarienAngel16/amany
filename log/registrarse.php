@@ -1,6 +1,6 @@
 ﻿<?php
 // Establecer la conexión a la base de datos
-$conn = mysqli_connect('tu_host', 'tu_usuario', 'tu_contraseña', 'tu_base_de_datos');
+include_once "database.php";
 
 // Verificar si se ha enviado el formulario
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
