@@ -1,127 +1,70 @@
 ﻿<?php
+// Establecer la conexión a la base de datos
+$conn = mysqli_connect('tu_host', 'tu_usuario', 'tu_contraseña', 'tu_base_de_datos');
 
-// Requerir el archivo database.php 
-include_once 'database.php';
+// Verificar si se ha enviado el formulario
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Tomar los datos del formulario
+    $nombre = $_POST['nombre'];
+    $email = $_POST['email'];
+    $contraseña = $_POST['contraseña'];
+    $apodo = $_POST['apodo'];
 
-$message = '';
+    // Generar un hash único para la activación de la cuenta
+    $hash = md5(uniqid(rand(), true));
 
-// Tomar el correo electrónico y la contraseña del cliente
-if (!empty($_POST['email_clie'])  && !empty($_POST['pssword_clie'])){
-    $sql = "INSERT INTO cliente (nickname_clie, email_clie, psswrd_clie, nom_clie, hash_) VALUES (:nickname_clie, :email_clie, :pssword_clie, :nom_clie, :hash_)";
-    $stmt = $conn->prepare($sql);
-    $stmt->bindParam(':email_clie',$_POST['email_clie']);
-    $password = password_hash($_POST['pssword_clie'], PASSWORD_BCRYPT);
-    $hash = md5( rand(0,1000) );
-    $stmt->bindParam(':hash_', $hash);
-    $stmt->bindParam(':pssword_clie', $password);
-    $nickname_lwr = strtolower($_POST['nickname_clie']);
-    $stmt->bindParam(':nickname_clie',$nickname_lwr);
-    $stmt->bindParam(':nom_clie',$_POST['nom_clie']);
-    $email = $_POST['email_clie'];
-    $_nickname_ = $_POST['nickname_clie'];
-    $_password_us = $_POST['pssword_clie'];
+    // Insertar los datos del cliente en la base de datos
+    $query = "INSERT INTO cliente (nom_clie, email_clie, pssword_clie, nickname_clie, hash_, activo) VALUES ('$nombre', '$email', '$contraseña', '$apodo', '$hash', 0)";
+    $result = mysqli_query($conn, $query);
 
-$to      = $email; // Enviar Email al usuario
-$subject = 'Signup | Verification'; // Darle un asunto al correo electrónico
-$message = '
- 
-Gracias por registrarte!
-Tu cuenta ha sido creada, activala utilizando el enlace de la parte inferior.
- 
-------------------------
-Username: '.$_nickname_.'
-Password: '.$_password_us.'
-------------------------
- 
-Por favor haz clic en este enlace para activar tu cuenta:
-http://amanycreandoando.site/log/activar.php?email='.$email.'&hash='.$hash.'
-'; // Aqui se incluye la URL para ir al mensaje
-                     
-$headers = 'From:gestorcuentas1691@amanycreandoando.site' . "\r\n"; // Colocar el encabezado
-mail($to, $subject, $message, $headers); // Enviar el correo electrónico
-    
-    if($stmt->execute()){
-        $message ='Successful';
-        
-        header('Location: login.php'); // En caso de que sea satisfactorio el proceso, se redirige al formulario de Login
+    if ($result) {
+        // Enviar correo electrónico de activación
+        $to = $email;
+        $subject = 'Activación de cuenta';
+        $message = '¡Gracias por registrarte! Para activar tu cuenta, haz clic en el siguiente enlace: https://amanycreandoando.site/log/activar.php?email=' . $email . '&hash=' . $hash;
+        $headers = 'From: gestorcuentas1691@manycreandoando.site'; // Cambia esto a tu dirección de correo electrónico
+        mail($to, $subject, $message, $headers);
+
+        // Redirigir al usuario a una página de éxito
+        header('Location: registro_exitoso.php');
+        exit;
     } else {
-        $message = 'Ups :( Algo salió mal';
-
-    }   
+        $error_message = 'Error al registrar el usuario. Por favor, inténtalo de nuevo.';
+    }
 }
 
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crear cuenta</title>
-    <link rel="stylesheet" href="../css/signup.css">
-    <script src="../javascripts/validar_signin.js"></script>
+    <title>Registrarse</title>
 </head>
 <body>
-    <header class="header">
-        <div class="container logo-nav-container">
-            <div class="logo">
-                <div>
-                </div>
-                <div class="menu-icon">
-                    <img src="../imgs/image3.png" alt="MENÚ">
-                </div>
-            </div>
-             <nav class="navigation">
-                <ul>
-                    <li><a href="../index.html">Inicio</a></li>
-                    <li><a href="../servicios.html">Servicios</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
 
-    <main class="main">
+    <h2>Registrarse</h2>
+    
+    <?php if (isset($error_message)): ?>
+        <p><?= $error_message ?></p>
+    <?php endif; ?>
 
-        <div class="signup-box">
+    <form action="registrarse.php" method="post">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" required><br><br>
 
-            <?php if(!empty($message)): ?>
-                    <p><?= $message ?></p>
-            <?php endif; ?>
-            <h2>Regístrate</h2>
+        <label for="email">Correo Electrónico:</label>
+        <input type="email" id="email" name="email" required><br><br>
 
-            <form action="registrarse.php" method="post" onsubmit="return validarsign();">
-				<!--USERNAME-->
-				<LABEL for="username">Nombre de usuario</LABEL>
-				<input id="_cliente_" type="text" name="nom_clie" placeholder="Ingresa el nombre" required autofocus>
-				<!--EMAIL-->
-				<LABEL for="email">Correo electrónico</LABEL>
-				<input id="_correo_" type="text" name="email_clie" placeholder="Ingresa el correo eléctrico" required>
-				<!--PASSWORD-->
-				<LABEL for="psswrd">Contraseña</LABEL>
-				<input id="_pssword_" type="password" name="pssword_clie" placeholder="Ingresa contraseña" required>
-				<!--PASSWORD CONFIRMATION-->
-				<LABEL for="nickname">Nickname</LABEL>
-				<input id="_nickname_" type="text" name="nickname_clie" placeholder="Ingresa un apodo (max. 10 caracteres)" required>
-	
-                <input type="submit" name="aceptar_" value="Registrar">
-            </form>
-            <div class="existente">
-                <span>¿Ya tienes una cuenta? <a href="login.php">Ingresar ahora</a></span>
-            </div>
-            
-		</div>
+        <label for="contraseña">Contraseña:</label>
+        <input type="password" id="contraseña" name="contraseña" required><br><br>
 
-    </main>
-    <footer class="footer">
-        <div class="container">
-           <p>GitHub: DavidAlvarezGaray</p> 
-        </div>
-    </footer>
+        <label for="apodo">Apodo:</label>
+        <input type="text" id="apodo" name="apodo" required><br><br>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="../scripts.js"></script>
+        <input type="submit" value="Registrarse">
+    </form>
+
 </body>
 </html>
-
-
-
