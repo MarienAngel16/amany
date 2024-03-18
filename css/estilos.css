@@ -1,0 +1,65 @@
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+.carousel {
+  position: relative;
+  z-index: 1;
+}
+
+nav {
+  position: absolute;
+  z-index: 2;
+  top: 30px;
+  right: 30px;
+}
+
+nav > a {
+  color: aliceblue;
+  font-weight: 400;
+  text-decoration: none;
+  margin-right: 15px;
+  font-size: 18px;
+}
+
+nav > a:hover {
+  text-decoration: underline;
+  color: aliceblue;
+  font-size: 1.2em;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.overlay {  
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  text-align: center;
+  width: 100%;
+  z-index: 3;
+  transform: translate(-50%, -50%); /* Evita que la transformación de .overlay afecte a .logo */
+  /* Mantén transform solo en .overlay si es necesario */
+}
+
+
+.text-content {  
+  max-width: 600px;
+  margin: auto 60% auto 0;
+  padding-left: 150px; /* Puedes ajustar este valor según tus necesidades */
+}
+
+.text-content h1 {
+  color: #fff;
+  text-align: left;
+  font-size: 2em; /* Ajusta el tamaño de la fuente */
+}
+
+.text-content p {
+  color: #fff;
+  text-align: left;
+  font-size: 1.2em; /* Ajusta el tamaño de la fuente */
+}
+
+
